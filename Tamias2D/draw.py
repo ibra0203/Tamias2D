@@ -1,5 +1,5 @@
-from physicsengine.space import *
-from physicsengine.shapes import *
+from Tamias2D.space import *
+from Tamias2D.shapes import *
 import pygame
 class drawHandler:
     def __init__(self, screen_):

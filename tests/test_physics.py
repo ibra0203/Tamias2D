@@ -1,4 +1,4 @@
-from physicsengine.physics2d import *
+from Tamias2D import *
 
 #Vec2
 def test_vec2_add():

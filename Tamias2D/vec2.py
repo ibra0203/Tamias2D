@@ -54,7 +54,7 @@ class Vec2:
             y = self.y / other.y
         return Vec2(x, y)
     def __str__(self):
-        s = "({}, {})".format(round(self.x, 2), round(self.y, 2))
+        s = "({}, {})".format(round(self.x, 4), round(self.y, 4))
         return s
     def __eq__(self, other):
         if isinstance(other, Vec2):

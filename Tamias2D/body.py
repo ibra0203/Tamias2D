@@ -1,4 +1,4 @@
-from physicsengine.vec2 import *
+from Tamias2D.vec2 import *
 
 class Body:
     STATIC = 0
@@ -75,6 +75,7 @@ class Body:
 
     #input: force_ (Vec2)
     def apply_force(self, force_):
+        force_ = force_
         self.force += force_
 
     #input: torque_ (float)

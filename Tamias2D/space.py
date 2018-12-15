@@ -1,7 +1,7 @@
-from physicsengine.vec2 import *
-from physicsengine.body import *
-from physicsengine.shapes import *
-from physicsengine.collision2d import *
+from Tamias2D.vec2 import *
+from Tamias2D.body import *
+from Tamias2D.shapes import *
+from Tamias2D.collision2d import *
 import pygame
 import collision
 class Space:

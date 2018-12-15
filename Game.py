@@ -1,6 +1,6 @@
 import pygame
-from physicsengine.draw import *
-from physicsengine.physics2d import *
+from Tamias2D.draw import *
+from Tamias2D import *
 import collision
 import random
 
@@ -17,32 +17,24 @@ black = (0,0,0)
 lblue = (220,240,255)
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('Physics Simulation')
-
 space = Space()
-
-groundShape = Box(Vec2(0,200), Vec2(400,400), 40)
-ground = Body(Vec2(330,500), 1000, 100, groundShape, 0, Body.STATIC, 0)
-space.add_body(ground)
-
-wallSh = Box(Vec2(700,0), Vec2(800,600), 40)
-wall = Body(Vec2(750,300), 1000, 100, wallSh, 0, Body.STATIC, 0)
-space.add_body(wall)
-
+floorShape = Box(Vec2(-900,0), Vec2(1800, 600), 0)
+floor = Body(Vec2(-900,500), 1000, 1000, floorShape, 0, Body.STATIC, 0.1)
 shape = Box(Vec2(0,0), Vec2(100,200), 0)
-body = Body(Vec2(250,0), 1000, 100, shape, 0, Body.DYNAMIC,0)
-
+space.set_gravity(Vec2(0, 98000))
+space.add_body(floor)
+body = Body(Vec2(250,0), 10, 100, shape, 0, Body.DYNAMIC,1)
 space.add_body(body)
 
-
-
-shape3 = Polygon(Vec2(0,0), [Vec2(0,0), Vec2(50,-50), Vec2(100,0), Vec2(100,100), Vec2(0, 100)], 0)
-body3 = Body(Vec2(250,280), 1000, 100, shape3, 0, Body.DYNAMIC,2)
-space.add_body(body3)
-body3.apply_force(Vec2(-1,0))
+shape2 = Polygon(Vec2(0,0), [Vec2(0,0), Vec2(50,-50), Vec2(100,0), Vec2(100,100), Vec2(0, 100)], 0)
+body2 = Body(Vec2(250,280), 1000, 100, shape2, 0, Body.DYNAMIC,2)
+#space.add_body(body2)
+body2.apply_force(Vec2(1000,0))
 
 circleShape = Circle(Vec2(200, 0), 50)
 circleBody = Body(Vec2(200,0), 1000, 100, circleShape, 0, Body.DYNAMIC, 1.5)
-space.add_body(circleBody)
+
+
 draw = drawHandler(gameDisplay)
 clock = pygame.time.Clock()
 crashed = False
@@ -50,12 +42,14 @@ space.set_gravity(Vec2(0, 98000))
 output = PhysicsOutput()
 opt = OutputOptions()
 opt.enable_option(Options.POSITION)
-opt.enable_option(Options.ROTATION)
+opt.enable_option(Options.ANGLE)
 output.options = opt
-output.add_body(body3)
+output.add_body(body2)
 output.add_body(body)
+dt=1
+
 while not crashed:
-    deltaTime = 1/60
+    deltaTime = (1/60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
@@ -66,12 +60,22 @@ while not crashed:
                 body.apply_force(Vec2(1000000, 0))
             if event.key == pygame.K_UP:
                 add_ball(space)
-
+    if dt>0:
+        dt += deltaTime*1000
+    if dt > 100:
+        dt = 0
+        body.apply_force(Vec2(0,-10000))
+        print("APPLIED FORCE")
+        print(body.force)
     gameDisplay.fill(lblue)
     space.step(deltaTime)
     output.update(deltaTime)
     draw.draw_space(space)
     pygame.display.update()
+
+    print("GRAVITY: " + str(body.gravity))
+    print("TIME: " + str(deltaTime))
+    print("G*T: " + str(body.gravity * deltaTime))
 
     clock.tick(60)
 pygame.quit()

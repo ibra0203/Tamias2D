@@ -1,10 +1,10 @@
-from physicsengine.body import *
+from Tamias2D.body import *
 from enum import Enum
 import matplotlib.pyplot as plt
 import numpy as np
 class Options(Enum):
     POSITION = "position"
-    ROTATION = "rotation"
+    ANGLE = "angle"
     VELOCITY = "velocity"
     ANGVEL = "angularVel"
     FORCE = "force"
@@ -16,7 +16,7 @@ class OutputOptions:
     def __init__(self):
         self.options = {
             Options.POSITION: False,
-            Options.ROTATION: False,
+            Options.ANGLE: False,
             Options.VELOCITY: False,
             Options.ANGVEL: False,
             Options.FORCE: False,
@@ -24,8 +24,16 @@ class OutputOptions:
             Options.ACCEL: False,
             Options.ANGACCEL: False
         }
-    def __getitem__(self, index):
-        return  self.options[index]
+    def __getitem__(self, key):
+        if key in self.options:
+            return  self.options[key]
+        else:
+            raise Exception("Key {0} doesn't exist in options".format(key))
+    def __setitem__(self, key, value):
+        if key in self.options:
+            self.options[key] = value
+        else:
+            raise Exception("Key {0} doesn't exist in options".format(key))
     def enable_option(self, key):
         if key in self.options:
             self.options[key] = True
@@ -41,8 +49,11 @@ class PhysicsOutput:
         self.frequency = frequency
         self.bodies = []
         self.options = options
+
         self.plotter = None
+        self.plotTimer = 0
         self.n=0
+        self.nPartial = 0
     def add_body(self, body):
         if isinstance(body, Body):
             self.bodies.append(body)
@@ -53,25 +64,35 @@ class PhysicsOutput:
         if self.deltaTime > self.frequency:
             self.deltaTime = 0
             self._print_output()
-            if self.plotter != None:
+        if self.plotter != None:
+            self.plotTimer += deltaTime*1000
+            if (self.plotTimer > 400):
+                self.nPartial = self.n + (self.deltaTime/self.frequency)
+                self.plotTimer = 0
                 if not self.plotter.done:
                     self._add_frame_info()
                     if self.elapsedTime > self.plotter.timeToPlot:
                         self.plotter.done = True
+                        self._print_output()
                         self.plotter.plot()
 
+    def set_options(self, options):
+        if isinstance(options, OutputOptions):
+            for key in self.options.options.keys():
+                self.options[key] = options[key]
     def _add_frame_info(self):
         i = 0
         for b in self.bodies:
             bInfo = dict()
+            bInfo ['n'] = self.nPartial
             if self.options[Options.POSITION]:
                 bInfo[Options.POSITION] = b.position
             if self.options[Options.VELOCITY]:
                 bInfo[Options.VELOCITY] = b.velocity
             if self.options[Options.ACCEL]:
                 bInfo[Options.ACCEL] = b.accel
-            if self.options[Options.ROTATION]:
-                bInfo[Options.ROTATION] = b.angle
+            if self.options[Options.ANGLE]:
+                bInfo[Options.ANGLE] = b.angle
             if self.options[Options.ANGVEL]:
                 bInfo[Options.ANGVEL] = b.angularVel
             if self.options[Options.ANGACCEL]:
@@ -98,7 +119,7 @@ class PhysicsOutput:
                 print("Vel: "+str(b.velocity))
             if self.options[Options.ACCEL]:
                 print("Accel: "+str(b.accel))
-            if self.options[Options.ROTATION]:
+            if self.options[Options.ANGLE]:
                 print("Angle: "+str(b.angle))
             if self.options[Options.ANGVEL]:
                 print("Angular Vel: "+str(b.angularVel))

@@ -1,7 +1,7 @@
 import abc
 import collision
 
-from physicsengine.vec2 import *
+from Tamias2D.vec2 import *
 class Shape(object):
     __metaclass__ = abc.ABCMeta
 
