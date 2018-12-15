@@ -19,7 +19,7 @@ gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('Physics Simulation')
 space = Space()
 floorShape = Box(Vec2(-900,0), Vec2(1800, 600), 0)
-floor = Body(Vec2(-900,500), 1000, 1000, floorShape, 0, Body.STATIC, 0.1)
+floor = Body(Vec2(-900,500), 1000, 1000, floorShape, 0, Body.STATIC, 0.5)
 shape = Box(Vec2(0,0), Vec2(100,200), 0)
 space.set_gravity(Vec2(0, 98000))
 space.add_body(floor)
@@ -46,7 +46,7 @@ opt.enable_option(Options.ANGLE)
 output.options = opt
 output.add_body(body2)
 output.add_body(body)
-dt=1
+
 
 while not crashed:
     deltaTime = (1/60)
@@ -60,22 +60,11 @@ while not crashed:
                 body.apply_force(Vec2(1000000, 0))
             if event.key == pygame.K_UP:
                 add_ball(space)
-    if dt>0:
-        dt += deltaTime*1000
-    if dt > 100:
-        dt = 0
-        body.apply_force(Vec2(0,-10000))
-        print("APPLIED FORCE")
-        print(body.force)
     gameDisplay.fill(lblue)
     space.step(deltaTime)
     output.update(deltaTime)
     draw.draw_space(space)
     pygame.display.update()
-
-    print("GRAVITY: " + str(body.gravity))
-    print("TIME: " + str(deltaTime))
-    print("G*T: " + str(body.gravity * deltaTime))
 
     clock.tick(60)
 pygame.quit()
