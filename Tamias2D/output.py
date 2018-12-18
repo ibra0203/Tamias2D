@@ -43,7 +43,7 @@ class OutputOptions:
             self.options[key] = False
 
 class PhysicsOutput:
-    def __init__(self, frequency = 2000, options = OutputOptions()):
+    def __init__(self, frequency = 1000, options = OutputOptions(), shouldOutput = False):
         self.deltaTime = frequency
         self.elapsedTime = 0
         self.frequency = frequency
@@ -66,15 +66,21 @@ class PhysicsOutput:
             self._print_output()
         if self.plotter != None:
             self.plotTimer += deltaTime*1000
-            if (self.plotTimer > 400):
-                self.nPartial = self.n + (self.deltaTime/self.frequency)
-                self.plotTimer = 0
-                if not self.plotter.done:
-                    self._add_frame_info()
-                    if self.elapsedTime > self.plotter.timeToPlot:
-                        self.plotter.done = True
+            self.nPartial = self.n + (self.deltaTime/self.frequency)
+            self.plotTimer = 0
+            if not self.plotter.done:
+                self._add_frame_info()
+                if self.elapsedTime > self.plotter.timeToPlot:
+                    if not self.plotter.done and not self.plotter.ready:
                         self._print_output()
+                        self.plotter.ready = True
                         self.plotter.plot()
+                        self.plotter.done = True
+                        return
+
+
+
+
 
     def set_options(self, options):
         if isinstance(options, OutputOptions):

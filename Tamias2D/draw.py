@@ -8,7 +8,7 @@ class drawHandler:
         for b in space_.get_bodies():
             s = b.shape
             if isinstance(s, Box):
-                pygame.draw.polygon(self.screen, pygame.Color(0, 100, 100), s.vertsAsList(), 3)
+                pygame.draw.polygon(self.screen, pygame.Color(255, 100, 100), s.vertsAsList(), 3)
 
             elif isinstance(s, Polygon):
                 pygame.draw.polygon(self.screen, pygame.Color(100,0,100), s.vertsAsList(), 3)

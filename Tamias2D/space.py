@@ -4,10 +4,12 @@ from Tamias2D.shapes import *
 from Tamias2D.collision2d import *
 import pygame
 import collision
+from Tamias2D.collision_util import *
 class Space:
     def __init__(self):
         self.bodies = []
         self.gravity = 0
+
 
     def set_gravity(self, gravity_):
         if isinstance(gravity_, Vec2):
@@ -25,30 +27,40 @@ class Space:
         return self.bodies
 
     def check_collision(self):
-        resp = collision.Response()
         i = 0
         while i < len(self.bodies):
             b = self.bodies[i]
             b.isBotCol = False
             i+=1
         i=0
+        slop = 0.2
         while i < len(self.bodies):
 
             j=i+1
             b1 = self.bodies[i]
             while j < len(self.bodies):
-                resp.reset()
+                resp = Response()
                 b2 = self.bodies[j]
                 if (isinstance(b1.shape, Polygon) and isinstance(b2.shape, Box)) or (isinstance(b1.shape, Box) and isinstance(b2.shape, Polygon)):
+
                     _box = b2
                     _pol = b1
-                    if isinstance(b2.shape, Polygon):
+                    if isinstance(b1.shape, Box):
                         _box = b1
                         _pol = b2
-                    if collision.test_poly_poly(_pol.shape.colShape, _box.shape.colShape, resp):
-                        CollisionHandler.resolve_collision(_pol, _box, resp)
+
+                    if col_poly_poly(_pol.shape.colShape, _box.shape.colShape, resp):
+                        should_res = True
+                        if abs(resp.overlap) < slop:
+                            if resp.overlap_n.x == 0.0 and resp.overlap_n.y > 0.0:
+                                b1.isBotCol = True
+                                should_res = False
+                            if resp.overlap_n.x == 0.0 and resp.overlap_n.y < 0.0:
+                                b2.isBotCol = True
+                        if should_res:
+                            CollisionHandler.resolve_collision(_pol, _box, resp)
                 elif isinstance(b1.shape, Polygon) and isinstance(b2.shape, Polygon):
-                    if collision.collide(b1.shape.colShape, b2.shape.colShape, resp):
+                    if col_poly_poly(b1.shape.colShape, b2.shape.colShape, resp):
                         CollisionHandler.resolve_collision(b1, b2, resp)
                 elif isinstance(b1.shape, Circle) or isinstance(b2.shape, Circle):
                     #circle count
@@ -63,7 +75,7 @@ class Space:
                         cN=2
 
                     if c==2:
-                        if collision.test_circle_circle(b1.shape.colShape, b2.shape.colShape, resp):
+                        if col_circle_circle(b1.shape.colShape, b2.shape.colShape, resp):
                             CollisionHandler.resolve_collision(b1, b2, resp)
                     else:
                         circle = b1
@@ -71,7 +83,7 @@ class Space:
                         if cN ==2:
                             circle = b2
                             poly = b1
-                        if collision.test_poly_circle(poly.shape.colShape, circle.shape.colShape,resp):
+                        if col_poly_circle(poly.shape.colShape, circle.shape.colShape,resp):
                             CollisionHandler.resolve_collision(b1, b2, resp)
 
 
