@@ -1,15 +1,15 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='Tamias2D',
       version='0.1',
       description='A physics engine',
-      url='',
-      author='Olu',
-      license='MIT',
-      packages=['Tamias2D'],
+      packages=find_packages(),
       install_requires=[
           'collision',
           'matplotlib',
           'pygame',
+          'scipy',
+
       ],
+      tests_require=['pytest'],
       zip_safe=False)
