@@ -1,6 +1,7 @@
 ### How to Install
 Opening a terminal and typing
 ```
-python setup.py develop
+pip install -e .
+
 ```
 Should install the package and all of the dependencies for now.
