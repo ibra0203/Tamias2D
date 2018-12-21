@@ -9,6 +9,7 @@ setup(name='Tamias2D',
           'matplotlib',
           'pygame',
           'scipy',
+          'pytest',
 
       ],
       tests_require=['pytest'],
